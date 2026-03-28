@@ -97,10 +97,7 @@ class BookingController extends Controller
 
         Payment::create([
             'booking_id' => $booking->id,
-            'amount' => $court->price_per_hour,
-            'status' => 'paid',
-            'payment_method' => 'credit_card',
-            'payment_date' => now()
+            'status' => 'paid'
         ]);
 
         return response()->json([

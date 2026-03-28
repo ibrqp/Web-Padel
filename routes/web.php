@@ -11,7 +11,7 @@ Route::get('/dashboard', function () {
     $bookings = \App\Models\Booking::with('court')->where('user_id', auth()->id())
         ->orderBy('date')->orderBy('start_time')->get();
     return view('dashboard', compact('bookings'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 use App\Http\Controllers\BookingController;
 
@@ -20,7 +20,7 @@ Route::post('/api/booking', [BookingController::class, 'store'])->middleware(['a
 Route::get('/api/courts/{court}/slots', [BookingController::class, 'getSlots'])->middleware(['auth'])->name('api.slots');
 
 Route::get('/owner/dashboard', function () {
-    $totalRevenue = (float) \App\Models\Payment::where('status', 'paid')->sum('amount');
+    $totalRevenue = (float) \App\Models\Booking::whereIn('status', ['confirmed', 'completed'])->sum('total_price');
     $totalBookings = \App\Models\Booking::whereIn('status', ['confirmed', 'completed'])->count();
     $newUsers = \App\Models\User::where('created_at', '>=', now()->subDays(30))->count();
     $recentBookings = \App\Models\Booking::with(['user', 'court'])->latest()->take(5)->get();
